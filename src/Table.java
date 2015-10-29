@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -7,6 +8,7 @@ public class Table {
 	private ColumnInfo[] columns;
 	private ArrayList<Row> rows;
 	private Map<String, Map<Object, Row>> indexMaps;
+    private static Map<String, Table> tables = new HashMap<String, Table>();
 
     public String getName() {
         return name;
@@ -28,12 +30,17 @@ public class Table {
         return indexMaps.containsKey(columnName);
     }
 
+    public Table getTable(String name) {
+        return tables.get(name);
+    }
 
-    public Table(String name, ColumnInfo[] columns) {
+    private Table(String name, ColumnInfo[] columns) {
 		
 	}
 
-
+    public Table create(String name, ColumnInfo columns) {
+        return null;
+    }
 	
 	public Table select (ColumnInfo[] columns, Condition condition) {
 		return null;
