@@ -46,7 +46,7 @@ public class Table {
 		return null;
 	}
 	
-	public void insert (Row row) {
+	public void insert (Object[] values) {
 
 	}
 	
