@@ -40,7 +40,7 @@ public class Table {
 		
 	}
 
-    public Table create(String name, ColumnInfo columns) {
+    public Table create(String name, ColumnInfo[] columns) {
         return null;
     }
 	
