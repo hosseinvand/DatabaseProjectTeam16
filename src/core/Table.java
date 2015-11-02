@@ -32,7 +32,7 @@ public class Table {
         return indexMaps.containsKey(columnName);
     }
 
-    public Table getTable(String name) {
+    public static Table getTable(String name) {
         return tables.get(name);
     }
 
@@ -40,7 +40,7 @@ public class Table {
 		
 	}
 
-    public Table create(String name, ColumnInfo[] columns) {
+    public static Table create(String name, ColumnInfo[] columns) {
         return null;
     }
 	
