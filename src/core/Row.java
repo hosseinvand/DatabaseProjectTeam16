@@ -7,6 +7,10 @@ public class Row {
     public Object getValue(String columnName) {
         return null;
     }
+
+    public ColumnInfo.Type getType(String columnName) {
+        return null;
+    }
 	
 	public Row(ColumnInfo[] column, Object[] values) {
 		this.columns = column;

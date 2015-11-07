@@ -9,6 +9,6 @@ public class ComputeValue {
 	}
 	
 	public Object getValue(Row row) {
-		return null;
+        return null;
 	}
 }
