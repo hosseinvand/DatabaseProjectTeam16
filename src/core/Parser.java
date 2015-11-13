@@ -13,10 +13,12 @@ public class Parser {
 			
 			if((aMethod[0]+aMethod[1]).equals("CREATETABLE")){
 				String tableName = aMethod[2];
-				String[][] columns = new String[2][aArguments.length];
+				String[] columnName = new String[aArguments.lenght];
+				String[] dataType = new String[aArguments.lenght];
+				
 				for(int i = 0 ; i<aArguments.length ; i++){
-					columns[0][i] = aArguments[i].substring(0, aArguments[i].indexOf(" "));
-					columns[1][i] = aArguments[i].substring(aArguments[i].indexOf(" ")+1);
+					columnNamr[i] = aArguments[i].substring(0, aArguments[i].indexOf(" "));
+					dataType[i] = aArguments[i].substring(aArguments[i].indexOf(" ")+1);
 				}
 			}
 			
