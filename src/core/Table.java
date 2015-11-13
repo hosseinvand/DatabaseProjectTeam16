@@ -51,19 +51,19 @@ public class Table {
         this.name = name;
         this.columns = columns;
         rows = new ArrayList<Row>();
-        tables.put(name, this);
     }
 
     public static Table create(String name, ColumnInfo[] columns)
     {
-        Table temp = new Table(name, columns);
-        return temp;
+        Table newTable = new Table(name, columns);
+        tables.put(name, newTable);
+        return newTable;
     }
 
     public Table select(ColumnInfo[] columns, Condition condition)
     {
         Table selectedTable = Table.create("", columns);
-        tables.remove(selectedTable);
+//        tables.remove(selectedTable);
         Row[] selectedRows = condition.getValidRows(this);
         Object[] values = new Object[columns.length];
         for(int i=0; i<selectedRows.length; i++)
@@ -79,50 +79,49 @@ public class Table {
     public void insert (Row row)
     {
         rows.add(row);
-        Set <String> tep = indexMaps.keySet();
-        Object[] s = tep.toArray();
-        for(int j=0; j<s.length; j++)
+        Set <String> indexKeySet = indexMaps.keySet();
+        Object[] objectArray = indexKeySet.toArray();
+        for(int j=0; j<objectArray.length; j++)
         {
-            indexMaps.get(s[j].toString()).put(row.getValue(s[j].toString()), row);
+            indexMaps.get(objectArray[j].toString()).put(row.getValue(objectArray[j].toString()), row);
         }
         return ;
     }
 
     public void delete (Condition condition)
     {
-        Row[] temp = condition.getValidRows(this);
-        for(int i=0; i<temp.length; i++)
+        Row[] deleteCandidates = condition.getValidRows(this);
+        for(int i=0; i<deleteCandidates.length; i++)
         {
-            Set <String> tep = indexMaps.keySet();
-            Object[] s = tep.toArray();
-            for(int j=0; j<s.length; j++)
+            Set <String> keySet = indexMaps.keySet();
+            Object[] objectArray = keySet.toArray();
+            for(int j=0; j<objectArray.length; j++)
             {
-                indexMaps.get(s[j].toString()).remove(temp[i].getValue(s[j].toString()), temp[i]);
+                indexMaps.get(objectArray[j].toString()).remove(deleteCandidates[i].getValue(objectArray[j].toString()), deleteCandidates[i]);
             }
         }
     }
 
     public void update (ColumnInfo column, Object value, Condition condition)
     {
-        Row[] temp = condition.getValidRows(this);
+        Row[] updateCandidates = condition.getValidRows(this);
         this.delete(condition);
-        for(int i=0; i<temp.length; i++)
+        for(int i=0; i<updateCandidates.length; i++)
         {
-            temp[i].setValue(column.name, value);
-            this.insert(temp[i]);
+            updateCandidates[i].setValue(column.name, value);
+            this.insert(updateCandidates[i]);
         }
-        return ;
     }
 
     public void createIndex (String indexName, ColumnInfo column)
     {
-        // TODO		index Name chiye ??
-        Multimap<Object, Row> temp = ArrayListMultimap.create();
+        // TODO		IndexName Application?
+        Multimap<Object, Row> multimap = ArrayListMultimap.create();
         for(int i=0; i<rows.size(); i++)
         {
-            temp.put(rows.get(i).getValue(column.name), rows.get(i));
+            multimap.put(rows.get(i).getValue(column.name), rows.get(i));
         }
-        indexMaps.put(column.name, temp);
+        indexMaps.put(column.name, multimap);
         System.out.println("INDEX CREATED");
         return ;
     }
