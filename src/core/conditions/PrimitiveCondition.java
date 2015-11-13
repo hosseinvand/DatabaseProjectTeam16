@@ -15,7 +15,7 @@ public class PrimitiveCondition extends SimpleCondition {
     public void parseExpression() {
         super.parseExpression();
         String conditionExp = getConditionExpression();
-        conditionExp.trim();
+        conditionExp = conditionExp.trim();
         if(conditionExp.equals("TRUE"))
             value = true;
         else if(conditionExp.equals("FALSE"))
@@ -26,7 +26,7 @@ public class PrimitiveCondition extends SimpleCondition {
 
     @Override
     public boolean isValidRow(Row row) {
-        return isReverse() ? !value : value;
+        return isReverse() ^ value;
     }
 
     @Override

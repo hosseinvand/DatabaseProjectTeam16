@@ -32,7 +32,7 @@ public class ConditionTest{
         columnInfos[2].type = ColumnInfo.Type.STRING;
         columnInfos[3] = new ColumnInfo();
         columnInfos[3].name = "enterance";
-        columnInfos[3].type = ColumnInfo.Type.STRING;
+        columnInfos[3].type = ColumnInfo.Type.INT;
         columnInfos[4] = new ColumnInfo();
         columnInfos[4].name = "major";
         columnInfos[4].type = ColumnInfo.Type.STRING;
@@ -52,7 +52,16 @@ public class ConditionTest{
          table.insert(new Object[] {6, "ayat", "male", "78", "HW", "12"});
          **/
     }
-    
+
+    /*
+    rows.add(new Row(columns, new Object[] {1, "kambiz", "male", 88, "SW", 12}));
+        rows.add(new Row(columns, new Object[] {2, "shohre", "female", 85, "HW", 42}));
+        rows.add(new Row(columns, new Object[] {3, "zakiye", "female", 91, "SW", 52}));
+        rows.add(new Row(columns, new Object[] {4, "bob", "male", 91, "IT", 32}));
+        rows.add(new Row(columns, new Object[] {5, "poone", "female", 92, "SW", 62}));
+        rows.add(new Row(columns, new Object[] {6, "ayat", "male", 78, "HW", 12}));
+     */
+
     @Test
     public void testPrimitveConditionTRUE() throws Exception {
         expression = "FALSE";
@@ -72,20 +81,119 @@ public class ConditionTest{
     }
 
     @Test
-    public void testOperatorCondition() throws Exception {
-        expression = "TRUE";
-        Row[] corRows = table.getRows().toArray(new Row[table.getRows().size()]);
+    public void testOperatorConditionEQUAL_1() throws Exception {
+        expression = "name=\"poone\"";
+        Row[] corRows = new Row[1];
+        corRows[0] = new Row(columnInfos, new Object[] {5, "poone", "female", 92, "SW", 62});
         Condition condition = Condition.buildCondition(expression);
         Row[] rows = condition.getValidRows(table);
         Assert.assertArrayEquals(corRows, rows);
     }
 
-    public void testCondition() throws Exception {
-        expression = "name=\"bob\"";
+    @Test
+    public void testOperatorConditionEQUAL_2() throws Exception {
+        expression = "passed=62";
         Row[] corRows = new Row[1];
-        corRows[0] = new Row(columnInfos, new Object[] {5, "poone", "female", "92", "SW", "62"});
+        corRows[0] = new Row(columnInfos, new Object[] {5, "poone", "female", 92, "SW", 62});
         Condition condition = Condition.buildCondition(expression);
         Row[] rows = condition.getValidRows(table);
-        Assert.assertArrayEquals(rows, corRows);
+        Assert.assertArrayEquals(corRows, rows);
+    }
+
+    @Test
+    public void testOperatorConditionEQUAL_NOT_EXIST() throws Exception {
+        expression = "passed=99";
+        Row[] corRows = new Row[0];
+        Condition condition = Condition.buildCondition(expression);
+        Row[] rows = condition.getValidRows(table);
+        Assert.assertArrayEquals(corRows, rows);
+    }
+
+    @Test
+    public void testOperatorConditionLESS() throws Exception {
+        expression = "passed<52";
+        Row[] corRows = new Row[4];
+        corRows[0] = new Row(columnInfos, new Object[] {1, "kambiz", "male", 88, "SW", 12});
+        corRows[1] = new Row(columnInfos, new Object[] {2, "shohre", "female", 85, "HW", 42});
+        corRows[2] = new Row(columnInfos, new Object[] {4, "bob", "male", 91, "IT", 32});
+        corRows[3] = new Row(columnInfos, new Object[] {6, "ayat", "male", 78, "HW", 12});
+        Condition condition = Condition.buildCondition(expression);
+        Row[] rows = condition.getValidRows(table);
+        Assert.assertArrayEquals(corRows, rows);
+    }
+
+    @Test
+    public void testOperatorConditionLESS_NOT_EXIST() throws Exception {
+        expression = "passed<9";
+        Row[] corRows = new Row[0];
+        Condition condition = Condition.buildCondition(expression);
+        Row[] rows = condition.getValidRows(table);
+        Assert.assertArrayEquals(corRows, rows);
+    }
+
+    @Test
+    public void testComplexCondition_OR() throws Exception {
+        expression = "(name=\"poone\") OR (name=\"bob\")";
+        Row[] corRows = new Row[2];
+        corRows[0] = new Row(columnInfos, new Object[] {4, "bob", "male", 91, "IT", 32});
+        corRows[1] = new Row(columnInfos, new Object[] {5, "poone", "female", 92, "SW", 62});
+        Condition condition = Condition.buildCondition(expression);
+        Row[] rows = condition.getValidRows(table);
+        Assert.assertArrayEquals(corRows, rows);
+    }
+
+    @Test
+    public void testComplexCondition_OR_2() throws Exception {
+        expression = "(sex=\"female\") OR (major=\"IT\")";
+        Row[] corRows = new Row[4];
+        corRows[0] = new Row(columnInfos, new Object[] {2, "shohre", "female", 85, "HW", 42});
+        corRows[1] = new Row(columnInfos, new Object[] {3, "zakiye", "female", 91, "SW", 52});
+        corRows[2] = new Row(columnInfos, new Object[] {4, "bob", "male", 91, "IT", 32});
+        corRows[3] = new Row(columnInfos, new Object[] {5, "poone", "female", 92, "SW", 62});
+        Condition condition = Condition.buildCondition(expression);
+        Row[] rows = condition.getValidRows(table);
+        Assert.assertArrayEquals(corRows, rows);
+    }
+
+    @Test
+    public void testComplexCondition_AND() throws Exception {
+        expression = "(sex=\"female\") AND (major=\"IT\")";
+        Row[] corRows = new Row[0];
+        Condition condition = Condition.buildCondition(expression);
+        Row[] rows = condition.getValidRows(table);
+        Assert.assertArrayEquals(corRows, rows);
+    }
+
+    @Test
+    public void testComplexCondition_AND_2() throws Exception {
+        expression = "(sex=\"male\") AND (major=\"IT\")";
+        Row[] corRows = new Row[1];
+        corRows[0] = new Row(columnInfos, new Object[] {4, "bob", "male", 91, "IT", 32});
+        Condition condition = Condition.buildCondition(expression);
+        Row[] rows = condition.getValidRows(table);
+        Assert.assertArrayEquals(corRows, rows);
+    }
+
+    @Test
+    public void testComplexCondition_AND_3() throws Exception {
+        expression = "(NOT sex=\"male\") AND (enterance>90)";
+        Row[] corRows = new Row[2];
+        corRows[0] = new Row(columnInfos, new Object[] {3, "zakiye", "female", 91, "SW", 52});
+        corRows[1] = new Row(columnInfos, new Object[] {5, "poone", "female", 92, "SW", 62});
+        Condition condition = Condition.buildCondition(expression);
+        Row[] rows = condition.getValidRows(table);
+        Assert.assertArrayEquals(corRows, rows);
+    }
+
+    @Test
+    public void testNOT() throws Exception {
+        expression = "NOT sex=\"male\"";
+        Row[] corRows = new Row[3];
+        corRows[0] = new Row(columnInfos, new Object[] {2, "shohre", "female", 85, "HW", 42});
+        corRows[1] = new Row(columnInfos, new Object[] {3, "zakiye", "female", 91, "SW", 52});
+        corRows[2] = new Row(columnInfos, new Object[] {5, "poone", "female", 92, "SW", 62});
+        Condition condition = Condition.buildCondition(expression);
+        Row[] rows = condition.getValidRows(table);
+        Assert.assertArrayEquals(corRows, rows);
     }
 }

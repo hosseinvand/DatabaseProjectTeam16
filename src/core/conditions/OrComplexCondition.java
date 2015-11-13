@@ -10,14 +10,16 @@ import java.util.HashSet;
  * Created by hossein on 11/11/15.
  */
 public class OrComplexCondition extends ComplexCondition {
-    public OrComplexCondition(String conditionExpression) {
+    public OrComplexCondition(String conditionExpression, String seperator, int index) {
         super(conditionExpression);
+        setSeperator(seperator);
+        setSeperatorIndex(index);
         parseExpression();
     }
 
     @Override
     public boolean isValidRow(Row row) {
-        return getLeftCondition().isValidRow(row) || getRightCondition().isValidRow(row);
+        return isReverse() ^ (getLeftCondition().isValidRow(row) || getRightCondition().isValidRow(row));
     }
 
     @Override

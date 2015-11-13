@@ -11,6 +11,14 @@ public abstract class ComplexCondition extends Condition {
     private String seperator;
     private int seperatorIndex;
 
+    public void setSeperator(String seperator) {
+        this.seperator = seperator;
+    }
+
+    public void setSeperatorIndex(int seperatorIndex) {
+        this.seperatorIndex = seperatorIndex;
+    }
+
     public Condition getLeftCondition() {
         return leftCondition;
     }
@@ -23,16 +31,12 @@ public abstract class ComplexCondition extends Condition {
         super(conditionExpression);
     }
 
-    public ComplexCondition build(String conditionExpression) {
-        conditionExpression.trim();
-        separateCondition(conditionExpression);
-        if(seperator.equals("AND"))
-            return new AndComplexCondition(conditionExpression);
-        else
-            return new OrComplexCondition(conditionExpression);
+    public static ComplexCondition buildCondition(String conditionExpression) {
+        conditionExpression = conditionExpression.trim();
+        return separateCondition(conditionExpression);
     }
 
-    protected void separateCondition(String conditionExpression) {
+    protected static ComplexCondition separateCondition(String conditionExpression) {
         int paranthesCount = 0;
         for(int i=0; i<conditionExpression.length(); ++i) {
             if(conditionExpression.charAt(i) == '(')
@@ -41,15 +45,17 @@ public abstract class ComplexCondition extends Condition {
                 paranthesCount--;
             if(paranthesCount != 0)
                 continue;
+            String seperator;
+            int seperatorIndex;
             if(conditionExpression.substring(i, i+3).equals("AND")) {
                 seperator = "AND";
                 seperatorIndex = i;
-                return;
+                return new AndComplexCondition(conditionExpression, seperator, seperatorIndex);
             }
             if(conditionExpression.substring(i, i+2).equals("OR")) {
                 seperator = "OR";
                 seperatorIndex = i;
-                return;
+                return new OrComplexCondition(conditionExpression, seperator, seperatorIndex);
             }
         }
         throw new IllegalStateException("ComplexCondition is not neither AND nor OR");
@@ -60,10 +66,10 @@ public abstract class ComplexCondition extends Condition {
         super.parseExpression();
         String conditionExpr = getConditionExpression();
         String leftExpr = conditionExpr.substring(0, seperatorIndex);
-        leftExpr.trim();
+        leftExpr = leftExpr.trim();
         leftExpr = leftExpr.substring(1, leftExpr.length()-1); // remove paranthes
         String rightExpr = conditionExpr.substring(seperatorIndex + seperator.length());
-        rightExpr.trim();
+        rightExpr = rightExpr.trim();
         rightExpr = rightExpr.substring(1, rightExpr.length()-1);// remove paranthes
 
         leftCondition = Condition.buildCondition(leftExpr);

@@ -29,7 +29,7 @@ public abstract class Condition {
     }
 
     public void parseExpression() {
-        conditionExpression.trim();
+        conditionExpression = conditionExpression.trim();
         while (conditionExpression.indexOf("NOT") == 0) {
             reverse = !reverse;
             conditionExpression = conditionExpression.substring(3);
@@ -39,8 +39,10 @@ public abstract class Condition {
     public Row[] getValidRowsByIteration(Row[] uncheckedRows, Condition checkCondition) {
         ArrayList<Row> checkedRows = new ArrayList<Row>();
         for (int i = 0; i < uncheckedRows.length; i++) {
-            if(checkCondition.isValidRow(uncheckedRows[i]))
+            if(checkCondition.isValidRow(uncheckedRows[i])) {
+//                System.out.println("checked:   " + uncheckedRows[i].toString());
                 checkedRows.add(uncheckedRows[i]);
+            }
         }
         return checkedRows.toArray(new Row[checkedRows.size()]);
     }

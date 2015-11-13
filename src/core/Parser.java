@@ -3,6 +3,7 @@ package core;
 public class Parser {
 
 	public void parse(String input) {
+        /*
 		String s = input;
 		
 		if(s.contains("(")){
@@ -56,6 +57,7 @@ public class Parser {
 				String[] columns = aMethod[1].split(",");
 			}
 		}
+		*/
 	}
 	
 }

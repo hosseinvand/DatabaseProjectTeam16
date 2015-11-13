@@ -1,10 +1,12 @@
 package core.conditions;
 
+import com.google.common.collect.Multimap;
 import core.ColumnInfo;
 import core.ComputeValue;
 import core.Row;
 import core.Table;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -36,9 +38,9 @@ public class OperatorCondition extends SimpleCondition {
             if(conditionExp.contains(operators[i])) {
                 operator = operators[i];
                 colname = conditionExp.substring(0, conditionExp.indexOf(operator));
-                colname.trim();
+                colname = colname.trim();
                 String coumputeValueExp = conditionExp.substring(conditionExp.indexOf(operator) + operator.length());
-                coumputeValueExp.trim();
+                coumputeValueExp = coumputeValueExp.trim();
                 computeValue = new ComputeValue(coumputeValueExp);
             }
         }
@@ -55,18 +57,20 @@ public class OperatorCondition extends SimpleCondition {
             comparison = left.compareTo(right);
         }
 
-        if(operator.equals(OPERATOR_EQUAL))
-            return comparison == 0;
-        if(operator.equals(OPERATOR_BIGGER_THAN))
-            return comparison > 0;
-        if(operator.equals(OPERATOR_EQUAL_BIGGER))
-            return comparison >= 0;
-        if(operator.equals(OPERATOR_LESS_THAN))
-            return comparison < 0;
-        if(operator.equals(OPERATOR_EQUAL_LESS))
-            return comparison <= 0;
+        boolean validness = false;
 
-        throw new IllegalStateException("unrecognized operator");
+        if(operator.equals(OPERATOR_EQUAL))
+            validness = comparison == 0;
+        if(operator.equals(OPERATOR_BIGGER_THAN))
+            validness = comparison > 0;
+        if(operator.equals(OPERATOR_EQUAL_BIGGER))
+            validness = comparison >= 0;
+        if(operator.equals(OPERATOR_LESS_THAN))
+            validness = comparison < 0;
+        if(operator.equals(OPERATOR_EQUAL_LESS))
+            validness = comparison <= 0;
+
+        return validness ^ isReverse();
     }
 
     @Override
@@ -81,8 +85,9 @@ public class OperatorCondition extends SimpleCondition {
         if(!shouldUseIndex(table) || !computeValue.isConstant())
             return getValidRowsByIteration(table.getRows().toArray(new Row[table.getRows().size()]), this);
         else {
-            Map<Object, Row> indexmap = table.getIndexMap(colname);
-            return new Row[]{indexmap.get(computeValue.getValue(null))};
+            Multimap<Object, Row> indexmap = table.getIndexMap(colname);
+            Collection<Row> rowCollection = indexmap.get(computeValue.getValue(null));
+            return rowCollection.toArray(new Row[rowCollection.size()]);
         }
     }
 }

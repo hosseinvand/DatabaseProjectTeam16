@@ -38,7 +38,8 @@ public class Table {
 
     public boolean isIndexed(String columnName)
     {
-        return indexMaps.containsKey(columnName);
+//        return indexMaps.containsKey(columnName);
+        return false;
     }
 
     public static Table getTable(String name)
@@ -50,15 +51,22 @@ public class Table {
     {
         this.name = name;
         this.columns = columns;
-        rows = new ArrayList<Row>();
-        tables.put(name, this);
+        rows = new ArrayList<>();
+//        tables.put(name, this);
+        rows.add(new Row(columns, new Object[] {1, "kambiz", "male", 88, "SW", 12}));
+        rows.add(new Row(columns, new Object[] {2, "shohre", "female", 85, "HW", 42}));
+        rows.add(new Row(columns, new Object[] {3, "zakiye", "female", 91, "SW", 52}));
+        rows.add(new Row(columns, new Object[] {4, "bob", "male", 91, "IT", 32}));
+        rows.add(new Row(columns, new Object[] {5, "poone", "female", 92, "SW", 62}));
+        rows.add(new Row(columns, new Object[] {6, "ayat", "male", 78, "HW", 12}));
     }
 
     public static Table create(String name, ColumnInfo[] columns)
     {
-        Table temp = new Table(name, columns);
-        Table.tables.remove(temp);
-        return temp;
+        return new Table(name, columns);
+//        Table temp = new Table(name, columns);
+//        Table.tables.remove(temp);
+//        return temp;
     }
 
     public Table select (ColumnInfo[] columns, Condition condition)

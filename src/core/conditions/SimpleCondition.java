@@ -12,7 +12,7 @@ public abstract class SimpleCondition extends Condition {
     }
 
     public static SimpleCondition buildCondition(String conditionExpression) {
-        conditionExpression.trim();
+        conditionExpression = conditionExpression.trim();
         if(conditionExpression.contains("TRUE") || conditionExpression.contains("FALSE"))
             return new PrimitiveCondition(conditionExpression);
         else

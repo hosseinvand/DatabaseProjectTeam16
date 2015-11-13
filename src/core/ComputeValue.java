@@ -7,6 +7,11 @@ public class ComputeValue {
         this.expression = expression;
 	}
 
+//    public String getValue(Row row) {
+//        String[] tokens = expression.split("[-+*/]");
+//
+//    }
+
     public String getValue(Row row) {
         String[] splitedExpression = expression.split("(?<=[-+*/])|(?=[-+*/])");
         String result = "";

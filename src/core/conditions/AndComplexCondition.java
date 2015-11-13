@@ -8,14 +8,16 @@ import java.util.ArrayList;
 
 public class AndComplexCondition extends ComplexCondition {
 
-    public AndComplexCondition(String conditionExpression) {
+    public AndComplexCondition(String conditionExpression, String seperator, int index) {
         super(conditionExpression);
+        setSeperator(seperator);
+        setSeperatorIndex(index);
         parseExpression();
     }
 
     @Override
     public boolean isValidRow(Row row) {
-        return getLeftCondition().isValidRow(row) && getRightCondition().isValidRow(row);
+        return isReverse() ^ (getLeftCondition().isValidRow(row) && getRightCondition().isValidRow(row));
     }
 
     @Override

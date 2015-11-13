@@ -26,4 +26,32 @@ public class Row {
             typeMap.put(columns[i].name, columns[i].type);
         }
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Row row = (Row) o;
+
+        if (typeMap != null ? !typeMap.equals(row.typeMap) : row.typeMap != null) return false;
+        if (valueMap != null ? !valueMap.equals(row.valueMap) : row.valueMap != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = valueMap != null ? valueMap.hashCode() : 0;
+        result = 31 * result + (typeMap != null ? typeMap.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Row{" +
+                "valueMap=" + valueMap.toString() +
+                ", typeMap=" + typeMap.toString() +
+                '}';
+    }
 }
