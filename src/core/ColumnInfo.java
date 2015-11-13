@@ -16,4 +16,12 @@ public class ColumnInfo {
 	public enum Type {
 		INT, STRING;
 	}
+
+    @Override
+    public String toString() {
+        return "ColumnInfo{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                '}';
+    }
 }

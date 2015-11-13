@@ -1,110 +1,139 @@
 package core;
 
+import java.util.ArrayList;
+
 public class Parser {
-
-    final public String VARCHAR = "VARCHAR", INT = "INT";
     public void parse(String input) {
-        String s = input;
+        input = input.trim();
+        if(input.indexOf("CREATE TABLE") == 0)
+            create(input.substring("CREATE TABLE".length()));
+        else if(input.indexOf("SELECT") == 0)
+            select(input.substring("SELECT".length()));
+        else if(input.indexOf("CREATE INDEX") == 0)
+            index(input.substring("CREATE INDEX".length()));
+        else if(input.indexOf("INSERT INTO") == 0)
+            insert(input.substring("INSERT INTO".length()));
+        else if(input.indexOf("UPDATE") == 0)
+            update(input.substring("UPDATE".length()));
+        else if(input.indexOf("DELETE FROM") == 0)
+            delete(input.substring("DELETE FROM".length()));
+    }
 
-        if(s.contains("(")){
-            String arguments = s.substring(s.indexOf('(')+1, s.indexOf(')'));
-            String method = s.substring(0, s.indexOf('('));
-            String[] aArguments = arguments.split(",");
-            String[] aMethod = method.split(" ");
+    private void delete(String input) {
+        input = input.trim();
+        String name = getNextWord(input);
+        input = deleteNextWord(input);
+        input = deleteNextWord(input);
+        input = input.trim();
+        String expression = input.substring(0, input.length()-1).trim();
+        Table table = Table.getTable(name);
+        table.delete(Condition.buildCondition(expression));
+    }
 
-            if((aMethod[0]+aMethod[1]).equals("CREATETABLE")){
-                String tableName = aMethod[2];
-                String[] columnName = new String[aArguments.length];
-                String[] dataType = new String[aArguments.length];
+    private void update(String input) {
+        input = input.trim();
+        String name = getNextWord(input);
+        input = deleteNextWord(input);
+        input = deleteNextWord(input);
+        String colname = input.substring(0, input.indexOf("=")).trim();
+        String expression = input.substring(input.indexOf("=")+1, input.indexOf("WHERE")).trim();
+        String condition = input.substring(input.indexOf("WHERE")+"WHERE".length(), input.length()-1).trim();
+        Table table = Table.getTable(name);
+        table.update(findColumnInfo(table, colname), expression, Condition.buildCondition(condition));
+    }
 
-                for(int i = 0 ; i<aArguments.length ; i++){
-                    columnName[i] = aArguments[i].substring(0, aArguments[i].indexOf(" "));
-                    dataType[i] = aArguments[i].substring(aArguments[i].indexOf(" ")+1);
-                }
-
-                ColumnInfo[] columnInfos = new ColumnInfo[columnName.length];
-                for(int i=0; i<columnInfos.length; i++)
-                {
-                    if(dataType[i] == VARCHAR)	columnInfos[i] = new ColumnInfo(columnName[i], ColumnInfo.Type.STRING);
-                    else	columnInfos[i] = new ColumnInfo(columnName[i], ColumnInfo.Type.INT);
-                }
-                Table.create(tableName, columnInfos);
-                System.out.println("TABLE CREATED");
-            }
-
-            if((aMethod[0]+aMethod[1]).equals("CREATEINDEX")){
-                String indexName = aMethod[2];
-                String tableName = aMethod[4];
-                String columnName = arguments;
-                ColumnInfo columnINFO = new ColumnInfo();
-                columnINFO.name = columnName;
-                Table.getTable(tableName).createIndex(indexName, columnINFO);
-            }
-
-            if((aMethod[0]).equals("INSERT")){
-                String tableName = aMethod[2];
-                String[] values = aArguments;
-                Row temp = new Row(Table.getTable(tableName).getColumns(), values);
-                Table.getTable(tableName).insert(temp);
-                System.out.println("RECORD INSERTED");
-            }
+    private void insert(String input) {
+        input = input.trim();
+        String name = getNextWord(input);
+        input = deleteNextWord(input);
+        input = deleteNextWord(input);
+        input = input.trim();
+        input = input.substring(1, input.length()-2);
+        input.trim();
+        String[] tokens = input.split(",");
+        Object[] values = new Object[tokens.length];
+        Table table = Table.getTable(name);
+        ColumnInfo[] columnInfos = table.getColumns();
+        for (int i = 0; i < tokens.length; i++) {
+            if (columnInfos[i].type == ColumnInfo.Type.INT)
+                values[i] = Integer.valueOf(tokens[i].trim());
+            else
+                values[i] = tokens[i].trim();
         }
-        else{
-            String method = s;
-            String[] aMethod = method.split(" ");
+        table.insert(new Row(columnInfos, values));
+    }
 
-            if((aMethod[0]).equals("UPDATE")){
-                String tableName = aMethod[1];
-                String column = aMethod[3].substring(0, aMethod[3].indexOf("="));
-                String value = aMethod[3].substring(aMethod[3].indexOf("=")+1);
-                String condition = aMethod[5];
-                //System.out.println(value);
-                ColumnInfo colmninfo = new ColumnInfo();
-                colmninfo.name = column;
-                Table.getTable(tableName).update(colmninfo, value, Condition.buildCondition(condition));
-            }
+    private void index(String input) {
+        input = input.trim();
+        String name = getNextWord(input);
+        input = deleteNextWord(input);
+        input = deleteNextWord(input);
+        String tableName = getNextWord(input);
+        input = deleteNextWord(input);
+        input = input.trim();
+        input = input.substring(1, input.length()-2);
+        String colName = input.trim();
+        Table table = Table.getTable(tableName);
+        table.createIndex(name, findColumnInfo(table, colName));
+    }
 
-            if((aMethod[0]).equals("DELETE")){
-                String tableName = aMethod[2];
-                String condition = aMethod[4];
-                Table.getTable(tableName).delete(Condition.buildCondition(condition));
-            }
-
-            if((aMethod[0]).equals("SELECT")){
-                String tableName = aMethod[3];
-                String condition = aMethod[5];
-                String[] columns = aMethod[1].split(",");
-                ColumnInfo[] columnInfos = new ColumnInfo[columns.length];
-                for(int i=0; i<columnInfos.length; i++)
-                {
-                    for(int j=0; j<Table.getTable(tableName).getColumns().length; j++)
-                    {
-                        if(Table.getTable(tableName).getColumns()[j].name.equals(columns[i]))
-                        {
-                            columnInfos[i] = Table.getTable(tableName).getColumns()[j];
-                            break;
-                        }
-                    }
-                }
-                Table temp = Table.getTable(tableName).select(columnInfos, Condition.buildCondition(condition));
-
-                for(int i=0; i<temp.getColumns().length; i++)
-                {
-                    System.out.print(temp.getColumns()[i].name);
-                    if(i == temp.getColumns().length)	System.out.print("\n");
-                    else	System.out.print(",");
-                }
-                for(int i=0; i<temp.getRows().size(); i++)
-                {
-                    for(int j=0; j<temp.getColumns().length; j++)
-                    {
-                        System.out.print(temp.getRows().get(j));
-                        if(i == temp.getColumns().length)	System.out.print("\n");
-                        else	System.out.print(",");
-                    }
-                }
-            }
+    private ColumnInfo findColumnInfo(Table table, String colName) {
+        ColumnInfo[] columnInfos = table.getColumns();
+        for (int i = 0; i < columnInfos.length; i++) {
+            if(columnInfos[i].name.equals(colName))
+                return columnInfos[i];
         }
+        return null;
+    }
+
+    private void select(String input) {
+        input = input.trim();
+        String[] tokens = input.split(",");
+        String[] colNames = new String[tokens.length];
+        for (int i = 0; i < tokens.length-1; i++) {
+            colNames[i] = tokens[i].trim();
+        }
+        colNames[colNames.length-1] = getNextWord(tokens[tokens.length-1]);
+        input = deleteNextWord(tokens[tokens.length-1]);
+        input = deleteNextWord(input);
+        String name = getNextWord(input);
+        input = deleteNextWord(input);
+        String expression = input.substring(0, input.length()-1).trim();
+        Table table = Table.getTable(name);
+        ColumnInfo[] columnInfo = table.getColumns();
+        ArrayList<ColumnInfo> list = new ArrayList<>();
+        for (int i = 0; i < colNames.length; i++) {
+            list.add(findColumnInfo(table, colNames[i]));
+        }
+        table.select((ColumnInfo[]) list.toArray(), Condition.buildCondition(expression));
+    }
+
+    private String getNextWord(String input) {
+        input = input.trim();
+        return input.substring(0, input.indexOf(' ')).trim();
+    }
+
+    private String deleteNextWord(String input) {
+        input = input.trim();
+        return input.substring(input.indexOf(' ')).trim();
+    }
+
+    private void create(String input) {
+        input = input.trim();
+        String name = getNextWord(input);
+        input = deleteNextWord(input);
+        input = input.trim();
+        input = input.substring(1, input.length() - 2);
+        input = input.trim();
+        String[] tokens = input.split(",");
+        ColumnInfo[] columnInfos = new ColumnInfo[tokens.length];
+        for (int i = 0; i < tokens.length; i++) {
+            tokens[i] = tokens[i].trim();
+            String[] sub = tokens[i].split(" +");
+            columnInfos[i].name = sub[0];
+            columnInfos[i].type = sub[1].equals("INT") ? ColumnInfo.Type.INT : ColumnInfo.Type.STRING;
+        }
+        Table.create(name, columnInfos);
     }
 
 }

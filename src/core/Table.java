@@ -13,7 +13,7 @@ public class Table {
     private String name;
     private ColumnInfo[] columns;
     private ArrayList<Row> rows;
-    private Map<String, Multimap<Object, Row>> indexMaps = new HashMap<String, Multimap<Object,Row>>();
+    private Map<String, Multimap<Object, Row>> indexMaps;
     private static Map<String, Table> tables = new HashMap<String, Table>();
 
     public String getName()
@@ -50,6 +50,7 @@ public class Table {
     {
         this.name = name;
         this.columns = columns;
+        indexMaps = new HashMap<>();
         rows = new ArrayList<Row>();
     }
 
@@ -62,8 +63,7 @@ public class Table {
 
     public Table select(ColumnInfo[] columns, Condition condition)
     {
-        Table selectedTable = Table.create("", columns);
-//        tables.remove(selectedTable);
+        Table selectedTable = new Table("", columns);
         Row[] selectedRows = condition.getValidRows(this);
         Object[] values = new Object[columns.length];
         for(int i=0; i<selectedRows.length; i++)
@@ -104,6 +104,7 @@ public class Table {
 
     public void update (ColumnInfo column, Object value, Condition condition)
     {
+        System.out.println(column + " " + value.toString() + " " + condition.toString());
         Row[] updateCandidates = condition.getValidRows(this);
         this.delete(condition);
         for(int i=0; i<updateCandidates.length; i++)

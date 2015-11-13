@@ -52,4 +52,12 @@ public abstract class Condition {
     abstract public boolean shouldUseIndex(Table table);
 
     abstract public Row[] getValidRows(Table table);
+
+    @Override
+    public String toString() {
+        return "Condition{" +
+                "conditionExpression='" + conditionExpression + '\'' +
+                ", reverse=" + reverse +
+                '}';
+    }
 }
