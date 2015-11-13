@@ -17,7 +17,7 @@ public class Parser {
 				String[] dataType = new String[aArguments.lenght];
 				
 				for(int i = 0 ; i<aArguments.length ; i++){
-					columnNamr[i] = aArguments[i].substring(0, aArguments[i].indexOf(" "));
+					columnName[i] = aArguments[i].substring(0, aArguments[i].indexOf(" "));
 					dataType[i] = aArguments[i].substring(aArguments[i].indexOf(" ")+1);
 				}
 			}
