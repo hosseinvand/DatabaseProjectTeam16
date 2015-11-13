@@ -38,8 +38,7 @@ public class Table {
 
     public boolean isIndexed(String columnName)
     {
-//        return indexMaps.containsKey(columnName);
-        return false;
+        return indexMaps.containsKey(columnName);
     }
 
     public static Table getTable(String name)
@@ -51,29 +50,28 @@ public class Table {
     {
         this.name = name;
         this.columns = columns;
-        rows = new ArrayList<>();
-//        tables.put(name, this);
-        rows.add(new Row(columns, new Object[] {1, "kambiz", "male", 88, "SW", 12}));
-        rows.add(new Row(columns, new Object[] {2, "shohre", "female", 85, "HW", 42}));
-        rows.add(new Row(columns, new Object[] {3, "zakiye", "female", 91, "SW", 52}));
-        rows.add(new Row(columns, new Object[] {4, "bob", "male", 91, "IT", 32}));
-        rows.add(new Row(columns, new Object[] {5, "poone", "female", 92, "SW", 62}));
-        rows.add(new Row(columns, new Object[] {6, "ayat", "male", 78, "HW", 12}));
+        rows = new ArrayList<Row>();
+        tables.put(name, this);
     }
 
     public static Table create(String name, ColumnInfo[] columns)
     {
-        return new Table(name, columns);
-//        Table temp = new Table(name, columns);
-//        Table.tables.remove(temp);
-//        return temp;
+        Table temp = new Table(name, columns);
+        return temp;
     }
 
-    public Table select (ColumnInfo[] columns, Condition condition)
+    public Table select(ColumnInfo[] columns, Condition condition)
     {
         Table temp = Table.create("", columns);
+        tables.remove(temp);
         Row[] tep = condition.getValidRows(this);
-        for(int i=0; i<tep.length; i++)		temp.insert(tep[i]);
+        Object[] values = new Object[columns.length];
+        for(int i=0; i<tep.length; i++)
+        {
+            for(int j=0; j<columns.length; j++)		values[j] = tep[i].getValue(columns[j].name);
+            Row row = new Row(columns, values);
+            temp.insert(row);
+        }
         return temp;
     }
 
@@ -86,6 +84,7 @@ public class Table {
         {
             indexMaps.get(s[j].toString()).put(row.getValue(s[j].toString()), row);
         }
+        return ;
     }
 
     public void delete (Condition condition)
@@ -123,5 +122,7 @@ public class Table {
             temp.put(rows.get(i).getValue(column.name), rows.get(i));
         }
         indexMaps.put(column.name, temp);
+        System.out.println("INDEX CREATED");
+        return ;
     }
 }
