@@ -1,8 +1,8 @@
 package core;
 
 public class ColumnInfo {
-	public String name;
-	public Type type;
+    public String name;
+    public Type type;
 
     public ColumnInfo() {
 
@@ -12,10 +12,10 @@ public class ColumnInfo {
         this.name = name;
         this.type = type;
     }
-	
-	public enum Type {
-		INT, STRING;
-	}
+
+    public enum Type {
+        INT, STRING;
+    }
 
     @Override
     public String toString() {

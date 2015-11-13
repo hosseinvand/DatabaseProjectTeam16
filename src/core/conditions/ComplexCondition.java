@@ -38,21 +38,21 @@ public abstract class ComplexCondition extends Condition {
 
     protected static ComplexCondition separateCondition(String conditionExpression) {
         int paranthesCount = 0;
-        for(int i=0; i<conditionExpression.length(); ++i) {
-            if(conditionExpression.charAt(i) == '(')
+        for (int i = 0; i < conditionExpression.length(); ++i) {
+            if (conditionExpression.charAt(i) == '(')
                 paranthesCount++;
-            if(conditionExpression.charAt(i) == ')')
+            if (conditionExpression.charAt(i) == ')')
                 paranthesCount--;
-            if(paranthesCount != 0)
+            if (paranthesCount != 0)
                 continue;
             String seperator;
             int seperatorIndex;
-            if(conditionExpression.substring(i, i+3).equals("AND")) {
+            if (conditionExpression.substring(i, i + 3).equals("AND")) {
                 seperator = "AND";
                 seperatorIndex = i;
                 return new AndComplexCondition(conditionExpression, seperator, seperatorIndex);
             }
-            if(conditionExpression.substring(i, i+2).equals("OR")) {
+            if (conditionExpression.substring(i, i + 2).equals("OR")) {
                 seperator = "OR";
                 seperatorIndex = i;
                 return new OrComplexCondition(conditionExpression, seperator, seperatorIndex);
@@ -67,10 +67,10 @@ public abstract class ComplexCondition extends Condition {
         String conditionExpr = getConditionExpression();
         String leftExpr = conditionExpr.substring(0, seperatorIndex);
         leftExpr = leftExpr.trim();
-        leftExpr = leftExpr.substring(1, leftExpr.length()-1); // remove paranthes
+        leftExpr = leftExpr.substring(1, leftExpr.length() - 1); // remove paranthes
         String rightExpr = conditionExpr.substring(seperatorIndex + seperator.length());
         rightExpr = rightExpr.trim();
-        rightExpr = rightExpr.substring(1, rightExpr.length()-1);// remove paranthes
+        rightExpr = rightExpr.substring(1, rightExpr.length() - 1);// remove paranthes
 
         leftCondition = Condition.buildCondition(leftExpr);
         rightCondition = Condition.buildCondition(rightExpr);

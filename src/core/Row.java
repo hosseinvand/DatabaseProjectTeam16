@@ -17,15 +17,15 @@ public class Row {
     public void setValue(String columnName, Object value) {
         valueMap.put(columnName, value);
     }
-	
-	public Row(ColumnInfo[] columns, Object[] values) {
+
+    public Row(ColumnInfo[] columns, Object[] values) {
         this.valueMap = new HashMap<String, Object>();
         this.typeMap = new HashMap<String, ColumnInfo.Type>();
-        for(int i=0; i<columns.length; ++i) {
+        for (int i = 0; i < columns.length; ++i) {
             valueMap.put(columns[i].name, values[i]);
             typeMap.put(columns[i].name, columns[i].type);
         }
-	}
+    }
 
     @Override
     public boolean equals(Object o) {

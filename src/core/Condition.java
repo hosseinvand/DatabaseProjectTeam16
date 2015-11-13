@@ -17,12 +17,12 @@ public abstract class Condition {
         return reverse;
     }
 
-    public Condition (String conditionExpression) {
+    public Condition(String conditionExpression) {
         this.conditionExpression = conditionExpression;
     }
 
     public static Condition buildCondition(String conditionExpression) {
-        if(conditionExpression.contains("AND") || conditionExpression.contains("OR"))
+        if (conditionExpression.contains("AND") || conditionExpression.contains("OR"))
             return ComplexCondition.buildCondition(conditionExpression);
         else
             return SimpleCondition.buildCondition(conditionExpression);
@@ -39,8 +39,7 @@ public abstract class Condition {
     public Row[] getValidRowsByIteration(Row[] uncheckedRows, Condition checkCondition) {
         ArrayList<Row> checkedRows = new ArrayList<Row>();
         for (int i = 0; i < uncheckedRows.length; i++) {
-            if(checkCondition.isValidRow(uncheckedRows[i])) {
-//                System.out.println("checked:   " + uncheckedRows[i].toString());
+            if (checkCondition.isValidRow(uncheckedRows[i])) {
                 checkedRows.add(uncheckedRows[i]);
             }
         }

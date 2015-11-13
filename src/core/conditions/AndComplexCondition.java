@@ -29,11 +29,10 @@ public class AndComplexCondition extends ComplexCondition {
     public Row[] getValidRows(Table table) {
         Row[] uncheckedRows;
         Condition checkCondition;
-        if(!shouldUseIndex(table)) {
+        if (!shouldUseIndex(table)) {
             uncheckedRows = table.getRows().toArray(new Row[table.getRows().size()]);
             checkCondition = this;
-        }
-        else {
+        } else {
             uncheckedRows = getLeftCondition().shouldUseIndex(table) ? getLeftCondition().getValidRows(table) :
                     getRightCondition().getValidRows(table);
             checkCondition = getLeftCondition().shouldUseIndex(table) ? getRightCondition() :

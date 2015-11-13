@@ -10,16 +10,9 @@ import java.util.Scanner;
 public class Driver {
     public static void main(String[] args) {
         Parser parser = new Parser();
-        File inputFile = new File("input");
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(inputFile);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            System.out.println(line);
             parser.parse(line);
         }
     }

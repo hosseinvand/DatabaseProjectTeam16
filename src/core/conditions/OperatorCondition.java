@@ -14,12 +14,12 @@ import java.util.Map;
  */
 public class OperatorCondition extends SimpleCondition {
     public static final String OPERATOR_EQUAL = "=";
-    public static final String OPERATOR_LESS_THAN  = "<";
+    public static final String OPERATOR_LESS_THAN = "<";
     public static final String OPERATOR_BIGGER_THAN = ">";
     public static final String OPERATOR_EQUAL_LESS = "<=";
     public static final String OPERATOR_EQUAL_BIGGER = ">=";
     public static final String[] operators = new String[]{OPERATOR_EQUAL, OPERATOR_LESS_THAN, OPERATOR_BIGGER_THAN,
-                                                            OPERATOR_EQUAL_LESS, OPERATOR_EQUAL_BIGGER};
+            OPERATOR_EQUAL_LESS, OPERATOR_EQUAL_BIGGER};
 
     private String operator;
     private String colname;
@@ -35,7 +35,7 @@ public class OperatorCondition extends SimpleCondition {
         super.parseExpression();
         String conditionExp = getConditionExpression();
         for (int i = 0; i < operators.length; i++) {
-            if(conditionExp.contains(operators[i])) {
+            if (conditionExp.contains(operators[i])) {
                 operator = operators[i];
                 colname = conditionExp.substring(0, conditionExp.indexOf(operator));
                 colname = colname.trim();
@@ -49,8 +49,8 @@ public class OperatorCondition extends SimpleCondition {
     @Override
     public boolean isValidRow(Row row) {
         int comparison;
-        if(row.getType(colname).equals(ColumnInfo.Type.INT))
-            comparison = ((Integer)row.getValue(colname)).compareTo(Integer.valueOf(computeValue.getValue(row)));
+        if (row.getType(colname).equals(ColumnInfo.Type.INT))
+            comparison = ((Integer) row.getValue(colname)).compareTo(Integer.valueOf(computeValue.getValue(row)));
         else {
             String left = (String) row.getValue(colname);
             String right = computeValue.getValue(row);
@@ -59,15 +59,15 @@ public class OperatorCondition extends SimpleCondition {
 
         boolean validness = false;
 
-        if(operator.equals(OPERATOR_EQUAL))
+        if (operator.equals(OPERATOR_EQUAL))
             validness = comparison == 0;
-        if(operator.equals(OPERATOR_BIGGER_THAN))
+        if (operator.equals(OPERATOR_BIGGER_THAN))
             validness = comparison > 0;
-        if(operator.equals(OPERATOR_EQUAL_BIGGER))
+        if (operator.equals(OPERATOR_EQUAL_BIGGER))
             validness = comparison >= 0;
-        if(operator.equals(OPERATOR_LESS_THAN))
+        if (operator.equals(OPERATOR_LESS_THAN))
             validness = comparison < 0;
-        if(operator.equals(OPERATOR_EQUAL_LESS))
+        if (operator.equals(OPERATOR_EQUAL_LESS))
             validness = comparison <= 0;
 
         return validness ^ isReverse();
@@ -75,14 +75,14 @@ public class OperatorCondition extends SimpleCondition {
 
     @Override
     public boolean shouldUseIndex(Table table) {
-        if(operator.equals(OPERATOR_EQUAL) && table.isIndexed(colname))
+        if (operator.equals(OPERATOR_EQUAL) && table.isIndexed(colname))
             return true;
         return false;
     }
 
     @Override
     public Row[] getValidRows(Table table) {
-        if(!shouldUseIndex(table) || !computeValue.isConstant())
+        if (!shouldUseIndex(table) || !computeValue.isConstant())
             return getValidRowsByIteration(table.getRows().toArray(new Row[table.getRows().size()]), this);
         else {
             Multimap<Object, Row> indexmap = table.getIndexMap(colname);

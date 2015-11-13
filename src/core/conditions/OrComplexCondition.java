@@ -29,14 +29,13 @@ public class OrComplexCondition extends ComplexCondition {
 
     @Override
     public Row[] getValidRows(Table table) {
-        if(!shouldUseIndex(table)) {
+        if (!shouldUseIndex(table)) {
             Row[] uncheckedRows;
             Condition checkCondition;
             uncheckedRows = table.getRows().toArray(new Row[table.getRows().size()]);
             checkCondition = this;
             return getValidRowsByIteration(uncheckedRows, checkCondition);
-        }
-        else {
+        } else {
             Row[] leftRows = getLeftCondition().getValidRows(table);
             Row[] rightRows = getRightCondition().getValidRows(table);
             HashSet<Row> uniqueRows = new HashSet<Row>();

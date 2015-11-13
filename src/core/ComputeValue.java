@@ -1,12 +1,12 @@
 package core;
 
 public class ComputeValue {
-	private String expression;
+    private String expression;
 
     public ComputeValue(String expression) {
         this.expression = expression;
         this.expression += "+";
-	}
+    }
 
     public String getValue(Row row) {
         String token = "";
@@ -16,12 +16,12 @@ public class ComputeValue {
         boolean insideString = false;
         char lastOperator = 0;
         expression.trim();
-        for(int i=0; i<expression.length(); ++i) {
+        for (int i = 0; i < expression.length(); ++i) {
             char c = expression.charAt(i);
 
-            if(insideString) {
+            if (insideString) {
                 token += c;
-                if(c != '\"') {
+                if (c != '\"') {
                     continue;
                 } else {
                     insideString = false;
@@ -29,17 +29,17 @@ public class ComputeValue {
                 }
             }
 
-            if(c == ' ')
+            if (c == ' ')
                 continue;
 
-            if(operator.indexOf(c) != -1) {
-                if(token.contains("\"")) { // "xxx"
-                    result += token.substring(1,token.length()-1);
+            if (operator.indexOf(c) != -1) {
+                if (token.contains("\"")) { // "xxx"
+                    result += token.substring(1, token.length() - 1);
                 } else {
-                    if(!numeric(token) && row.getType(token).equals(ColumnInfo.Type.INT)) // convert INT VAR to value
-                        token = ((Integer)row.getValue(token)).toString();
-                    if(numeric(token)) { // number
-                        if(stringSeen)
+                    if (!numeric(token) && row.getType(token).equals(ColumnInfo.Type.INT)) // convert INT VAR to value
+                        token = ((Integer) row.getValue(token)).toString();
+                    if (numeric(token)) { // number
+                        if (stringSeen)
                             result += token;
                         else {
                             switch (lastOperator) {
@@ -72,7 +72,7 @@ public class ComputeValue {
                 continue;
             }
 
-            if(c == '\"') {
+            if (c == '\"') {
                 token += c;
                 insideString = true;
                 stringSeen = true;
@@ -87,7 +87,7 @@ public class ComputeValue {
 
     private boolean numeric(String str) {
         for (int i = 0; i < str.length(); i++) {
-            if(!Character.isDigit(str.charAt(i)))
+            if (!Character.isDigit(str.charAt(i)))
                 return false;
         }
         return true;
@@ -95,11 +95,11 @@ public class ComputeValue {
 
     public boolean isConstant() {
         boolean insideString = false;
-        for(int i = 0 ; i < expression.length(); ++i) {
+        for (int i = 0; i < expression.length(); ++i) {
             char curchar = expression.charAt(i);
-            if(curchar == '\"')
+            if (curchar == '\"')
                 insideString = !insideString;
-            if(Character.isLetter(curchar) && !insideString)
+            if (Character.isLetter(curchar) && !insideString)
                 return false;
         }
         return true;
