@@ -18,9 +18,10 @@ public class PrimitiveCondition extends SimpleCondition {
         conditionExp.trim();
         if(conditionExp.equals("TRUE"))
             value = true;
-        if(conditionExp.equals("FALSE"))
+        else if(conditionExp.equals("FALSE"))
             value = false;
-        throw new IllegalStateException("PrimitiveCondition is not neither true nor false");
+        else
+            throw new IllegalStateException("PrimitiveCondition is not neither true nor false");
     }
 
     @Override

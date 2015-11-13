@@ -55,7 +55,7 @@ public class Parser {
 				String condition = aMethod[5];
 				String[] columns = aMethod[1].split(",");
 			}
-		}		
+		}
 	}
 	
 }

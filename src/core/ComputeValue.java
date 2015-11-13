@@ -4,8 +4,7 @@ public class ComputeValue {
 	private String expression;
 
     public ComputeValue(String expression) {
-
-		//TODO
+        this.expression = expression;
 	}
 
     public String getValue(Row row) {
@@ -79,6 +78,14 @@ public class ComputeValue {
     }
 
     public boolean isConstant() {
-        return false;
+        boolean insideString = false;
+        for(int i = 0 ; i < expression.length(); ++i) {
+            char curchar = expression.charAt(i);
+            if(curchar == '\"')
+                insideString = !insideString;
+            if(Character.isLetter(curchar) && !insideString)
+                return false;
+        }
+        return true;
     }
 }

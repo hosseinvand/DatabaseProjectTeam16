@@ -11,7 +11,7 @@ public abstract class SimpleCondition extends Condition {
         super(conditionExpression);
     }
 
-    public SimpleCondition build(String conditionExpression) {
+    public static SimpleCondition buildCondition(String conditionExpression) {
         conditionExpression.trim();
         if(conditionExpression.contains("TRUE") || conditionExpression.contains("FALSE"))
             return new PrimitiveCondition(conditionExpression);
