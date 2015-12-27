@@ -1,29 +1,45 @@
 package core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Row {
-    private HashMap<String, Object> valueMap;
-    private HashMap<String, ColumnInfo.Type> typeMap;
+import static core.Table.getEffectiveName;
 
-    public Object getValue(String columnName) {
-        return valueMap.get(columnName);
+public class Row {
+    private HashMap<String, String> valueMap;
+    private HashMap<String, ColumnInfo.Type> typeMap;
+    private HashMap<String, String> effectiveValueMap;
+    private HashMap<String, ColumnInfo.Type> effectiveTypeMap;
+
+    public String getValue(String columnName) {
+        if(valueMap.containsKey(columnName))
+            return valueMap.get(columnName);
+        else
+            return effectiveValueMap.get(columnName);
     }
 
     public ColumnInfo.Type getType(String columnName) {
-        return typeMap.get(columnName);
+        if(typeMap.containsKey(columnName))
+            return typeMap.get(columnName);
+        else
+            return effectiveTypeMap.get(columnName);
     }
 
-    public void setValue(String columnName, Object value) {
+    public void setValue(String columnName, String value) {
         valueMap.put(columnName, value);
+        effectiveValueMap.put(getEffectiveName(columnName), value);
     }
 
-    public Row(ColumnInfo[] columns, Object[] values) {
-        this.valueMap = new HashMap<String, Object>();
-        this.typeMap = new HashMap<String, ColumnInfo.Type>();
+    public Row(ColumnInfo[] columns, String[] values) {
+        this.valueMap = new HashMap<>();
+        this.typeMap = new HashMap<>();
+        this.effectiveTypeMap = new HashMap<>();
+        this.effectiveValueMap = new HashMap<>();
         for (int i = 0; i < columns.length; ++i) {
             valueMap.put(columns[i].name, values[i]);
             typeMap.put(columns[i].name, columns[i].type);
+            effectiveValueMap.put(getEffectiveName(columns[i].name), values[i]);
+            effectiveTypeMap.put(getEffectiveName(columns[i].name), columns[i].type);
         }
     }
 
@@ -50,8 +66,19 @@ public class Row {
     @Override
     public String toString() {
         return "Row{" +
-                "valueMap=" + valueMap.toString() +
-                ", typeMap=" + typeMap.toString() +
+                "valueMap=" + valueMap +
+                ", typeMap=" + typeMap +
                 '}';
+    }
+
+
+    public void checkC2(ArrayList<ForeignKey> fks) throws Table.DBException {
+        for(ForeignKey fk : fks)
+            checkC2(fk);
+    }
+
+    public void checkC2(ForeignKey fk) throws Table.DBException {
+        if(fk.referToTable.getRowByPK(this.getValue(fk.info.name)) == null)
+            throw Table.DBException.c2Exception();
     }
 }

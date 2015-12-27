@@ -37,7 +37,7 @@ public class ComputeValue {
                     result += token.substring(1, token.length() - 1);
                 } else {
                     if (!numeric(token) && row.getType(token).equals(ColumnInfo.Type.INT)) // convert INT VAR to value
-                        token = ((Integer) row.getValue(token)).toString();
+                        token = row.getValue(token);
                     if (numeric(token)) { // number
                         if (stringSeen)
                             result += token;
@@ -61,7 +61,7 @@ public class ComputeValue {
                             }
                         }
                     } else { // VAR
-                        token = (String) row.getValue(token);
+                        token = row.getValue(token);
                         stringSeen = true;
                         result += token;
                     }

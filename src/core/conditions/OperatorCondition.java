@@ -50,9 +50,9 @@ public class OperatorCondition extends SimpleCondition {
     public boolean isValidRow(Row row) {
         int comparison;
         if (row.getType(colname).equals(ColumnInfo.Type.INT))
-            comparison = ((Integer) row.getValue(colname)).compareTo(Integer.valueOf(computeValue.getValue(row)));
+            comparison = Integer.compare(Integer.parseInt(row.getValue(colname)), Integer.valueOf(computeValue.getValue(row)));
         else {
-            String left = (String) row.getValue(colname);
+            String left = row.getValue(colname);
             String right = computeValue.getValue(row);
             comparison = left.compareTo(right);
         }
@@ -85,7 +85,7 @@ public class OperatorCondition extends SimpleCondition {
         if (!shouldUseIndex(table) || !computeValue.isConstant())
             return getValidRowsByIteration(table.getRows().toArray(new Row[table.getRows().size()]), this);
         else {
-            Multimap<Object, Row> indexmap = table.getIndexMap(colname);
+            Multimap<String, Row> indexmap = table.getIndexMap(colname);
             Collection<Row> rowCollection = indexmap.get(computeValue.getValue(null));
             return rowCollection.toArray(new Row[rowCollection.size()]);
         }

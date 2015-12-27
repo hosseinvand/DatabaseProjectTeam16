@@ -34,7 +34,7 @@ public class ComputeValueTest {
         columnInfos[5].name = "passed";
         columnInfos[5].type = ColumnInfo.Type.INT;
 
-        row = new Row(columnInfos, new Object[]{5, "poone", "female", 92, "SW", 62});
+        row = new Row(columnInfos, new String[]{"5", "poone", "female", "92", "SW", "62"});
     }
 
     @Test
