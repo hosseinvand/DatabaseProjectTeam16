@@ -17,7 +17,7 @@ public class Driver {
 //        }
 
         Parser parser = new Parser();
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(new File("input"));
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             parser.parse(line);

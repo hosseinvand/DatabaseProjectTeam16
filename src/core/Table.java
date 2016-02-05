@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import core.conditions.Agg.HavingCondition;
 
 
 public class Table {
@@ -37,7 +38,14 @@ public class Table {
     }
 
     public static Table getTable(String name) {
+        if(!tables.containsKey(name)) {
+            return View.getTable(name);
+        }
         return tables.get(name);
+    }
+
+    public static boolean isTable(String name) {
+        return tables.containsKey(name);
     }
 
     private Table(String name, ColumnInfo[] columns) {
@@ -163,8 +171,9 @@ public class Table {
         Row[] selectedRows = condition.getValidRows(this);
         String[] values = new String[columns.length];
         for (int i = 0; i < selectedRows.length; i++) {
-            for (int j = 0; j < columns.length; j++)
+            for (int j = 0; j < columns.length; j++) {
                 values[j] = selectedRows[i].getValue(columns[j].name);
+            }
             Row row = new Row(columns, values);
             try {
                 selectedTable.insert(row);
@@ -173,6 +182,54 @@ public class Table {
             }
         }
         return selectedTable;
+    }
+
+    public Table selectWithGroup(ColumnInfo[] columns, Condition condition, ColumnInfo[] group, HavingCondition cond) {
+        Table selectedTable = new Table("", columns);
+        Row[] selectedRows = condition.getValidRows(this);
+        Row[] groupPart= projectAndUnique(selectedRows, group);
+        ArrayList<Row> validGroups = new ArrayList<>();
+        for (int i = 0; i < groupPart.length; i++) {
+            ArrayList<Row> groupRows = new ArrayList<>();
+            for (int j = 0; j < selectedRows.length; j++) {
+                if(subset(groupPart[i], group, selectedRows[j]))
+                    groupRows.add(selectedRows[j]);
+            }
+            if(cond.isValid(groupRows))
+                validGroups.add(groupPart[i]);
+        }
+        Row[] finalRows = project(validGroups.toArray(new Row[validGroups.size()]), columns);
+        for (int i = 0; i < finalRows.length; i++) {
+            selectedTable.blindInsert(finalRows[i]);
+        }
+        return selectedTable;
+    }
+
+    private boolean subset(Row small, ColumnInfo[] smallInfo, Row big) {
+        for (int i = 0; i < smallInfo.length; i++) {
+            if(!small.getValue(smallInfo[i].name).equals(big.getValue(smallInfo[i].name)))
+                return false;
+        }
+        return true;
+    }
+
+    private Row[] projectAndUnique(Row[] selectedRows, ColumnInfo[] group) {
+        Row[] projectRow = project(selectedRows, group);
+        Set<Row> tmpSet = new HashSet<Row>(Arrays.asList(projectRow));
+        Row[] unique = tmpSet.toArray(new Row[tmpSet.size()]);
+        return unique;
+    }
+
+    private Row[] project(Row[] selectedRows, ColumnInfo[] group) {
+        Row[] projectRow = new Row[selectedRows.length];
+        for (int i = 0; i < selectedRows.length; i++) {
+            String values[] = new String[group.length];
+            for (int j = 0; j < group.length; j++) {
+                values[j] = selectedRows[i].getValue(group[j].name);
+            }
+            projectRow[i] = new Row(group, values);
+        }
+        return projectRow;
     }
 
     public void insert(Row row) throws DBException {

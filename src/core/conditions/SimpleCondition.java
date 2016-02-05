@@ -2,9 +2,6 @@ package core.conditions;
 
 import core.Condition;
 
-/**
- * Created by hossein on 11/5/15.
- */
 public abstract class SimpleCondition extends Condition {
 
     public SimpleCondition(String conditionExpression) {

@@ -12,10 +12,15 @@ public class Row {
     private HashMap<String, ColumnInfo.Type> effectiveTypeMap;
 
     public String getValue(String columnName) {
+        String ret;
         if(valueMap.containsKey(columnName))
-            return valueMap.get(columnName);
+            ret = valueMap.get(columnName);
         else
-            return effectiveValueMap.get(columnName);
+            ret = effectiveValueMap.get(columnName);
+        if(ret == null)
+            return "NULL";
+        else
+            return ret;
     }
 
     public ColumnInfo.Type getType(String columnName) {
